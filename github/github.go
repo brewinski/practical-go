@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 )
 
 func main() {
@@ -17,17 +18,21 @@ func main() {
 }
 
 func githubInfo(username string) (string, int, error) {
-	url := fmt.Sprintf("https://api.github.com/users/%s", username)
+	url := fmt.Sprintf("https://api.github.com/users/%s", url.PathEscape(username))
 	resp, err := http.Get(url)
 	if err != nil {
-		return "", 0, err
+		return "", 0, fmt.Errorf("unable to make request, %w", err)
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		return "", 0, fmt.Errorf("received non-200 status code: %s", resp.Status)
 	}
 
-	var r Reply
+	// var r Reply
+	var r struct {
+		Name        string `json:"name"`
+		PublicRepos int    `json:"public_repos"`
+	}
 
 	dec := json.NewDecoder(resp.Body)
 
@@ -37,7 +42,7 @@ func githubInfo(username string) (string, int, error) {
 	return r.Name, r.PublicRepos, nil
 }
 
-type Reply struct {
-	Name        string `json:"name"`
-	PublicRepos int    `json:"public_repos"`
-}
+// type Reply struct {
+// 	Name        string `json:"name"`
+// 	PublicRepos int    `json:"public_repos"`
+// }
