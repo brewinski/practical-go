@@ -6,10 +6,13 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
 func main() {
 	fmt.Println(sha1Sum("./http.log.gz"))
+	fmt.Println(sha1Sum("./sha1.go"))
+
 }
 
 func sha1Sum(fileName string) (string, error) {
@@ -20,12 +23,18 @@ func sha1Sum(fileName string) (string, error) {
 
 	defer file.Close()
 
-	r, err := gzip.NewReader(file)
-	if err != nil {
-		return "", fmt.Errorf("failed to open gzip reader: %w", err)
-	}
+	var r io.Reader = file
 
-	defer r.Close()
+	if strings.HasSuffix(fileName, ".gz") {
+		gzipFile, err := gzip.NewReader(file)
+		if err != nil {
+			return "", fmt.Errorf("failed to open gzip reader: %w", err)
+		}
+
+		defer gzipFile.Close()
+
+		r = gzipFile
+	}
 
 	w := sha1.New()
 
