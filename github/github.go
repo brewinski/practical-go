@@ -34,6 +34,11 @@ func main() {
 	fmt.Println(r)
 }
 
+func githubInfo(login string) (string, int, error) {
+	// TODO: your code goes here
+	return "", 0, nil
+}
+
 type Reply struct {
 	Name        string `json:"name"`
 	PublicRepos int    `json:"public_repos"`
