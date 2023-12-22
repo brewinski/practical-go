@@ -25,6 +25,8 @@ func sha1Sum(fileName string) (string, error) {
 		return "", fmt.Errorf("failed to open gzip reader: %w", err)
 	}
 
+	defer r.Close()
+
 	w := sha1.New()
 
 	if _, err := io.Copy(w, r); err != nil {
