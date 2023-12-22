@@ -27,6 +27,7 @@ func githubInfo(username string) (string, int, error) {
 	if resp.StatusCode != http.StatusOK {
 		return "", 0, fmt.Errorf("received non-200 status code: %s", resp.Status)
 	}
+	defer resp.Body.Close()
 
 	// var r Reply
 	var r struct {
