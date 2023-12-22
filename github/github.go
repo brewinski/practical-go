@@ -8,35 +8,33 @@ import (
 )
 
 func main() {
-	resp, err := http.Get("https://api.github.com/users/brewinski")
+	name, repos, err := githubInfo("brewinski")
 	if err != nil {
-		log.Fatalf("Error fetching github user: %s", err)
+		log.Fatalf("error getting github info: %s", err)
+	}
+
+	fmt.Println(name, repos)
+}
+
+func githubInfo(username string) (string, int, error) {
+	url := fmt.Sprintf("https://api.github.com/users/%s", username)
+	resp, err := http.Get(url)
+	if err != nil {
+		return "", 0, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Error response from github: %s", resp.Status)
+		return "", 0, fmt.Errorf("received non-200 status code: %s", resp.Status)
 	}
-
-	// fmt.Printf("Content-Type: %s\n", resp.Header.Get("Content-Type"))
-
-	// if _, err := io.Copy(os.Stdout, resp.Body); err != nil {
-	// 	log.Fatalf("Error copying response body: %s", err)
-	// }
 
 	var r Reply
 
 	dec := json.NewDecoder(resp.Body)
 
 	if err := dec.Decode(&r); err != nil {
-		log.Fatalf("Error decoding json: %s", err)
+		return "", 0, fmt.Errorf("unable to decode github response body, %w", err)
 	}
-
-	fmt.Println(r)
-}
-
-func githubInfo(login string) (string, int, error) {
-	// TODO: your code goes here
-	return "", 0, nil
+	return r.Name, r.PublicRepos, nil
 }
 
 type Reply struct {
