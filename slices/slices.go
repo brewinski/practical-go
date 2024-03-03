@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 )
 
 func main() {
@@ -25,11 +24,12 @@ func main() {
 
 	var s4 []int
 
-	for i := 0; i < 1_000_000_000_000; i++ {
+	for i := 0; i < 1_000_000; i++ {
 		s4 = appendInt(s4, i)
 	}
 
 	// fmt.Println(s4, len(s4), cap(s4))
+	fmt.Println(concat([]string{"A", "B"}, []string{"C", "D", "E"})) // [A, B, C, D, E]
 }
 
 func appendInt(s []int, v int) []int {
@@ -39,7 +39,7 @@ func appendInt(s []int, v int) []int {
 		s = s[:len(s)+1]
 	} else { // need to re-allocate and copy
 		fmt.Printf("reallocate: len=%d cap=%d \n", len(s), 2*len(s)+1)
-		time.Sleep(500 * time.Millisecond)
+		// time.Sleep(500 * time.Millisecond)
 		s2 := make([]int, 2*len(s)+1)
 		copy(s2, s)
 		s = s2[:len(s)+1]
@@ -47,4 +47,8 @@ func appendInt(s []int, v int) []int {
 
 	s[i] = v
 	return s
+}
+
+func concat(s1, s2 []string) []string {
+	return append(s1, s2...)
 }
